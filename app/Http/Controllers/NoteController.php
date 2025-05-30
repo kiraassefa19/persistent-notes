@@ -17,13 +17,18 @@ class NoteController extends Controller
             
             return Inertia::render('NotesPage', [
                 'notes' => $notes,
+                'error' => null
             ]);
         } catch (\Exception $e) {
             Log::error('Error fetching notes: ' . $e->getMessage(), [
                 'exception' => $e,
                 'trace' => $e->getTraceAsString()
             ]);
-            throw $e;
+            
+            return Inertia::render('NotesPage', [
+                'notes' => [],
+                'error' => 'Failed to load notes. Please try again.'
+            ]);
         }
     }
 
