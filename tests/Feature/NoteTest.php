@@ -5,10 +5,37 @@ namespace Tests\Feature;
 use App\Models\Note;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
+use Inertia\Testing\AssertableInertia as Assert;
 
+/**
+ * @group feature
+ */
 class NoteTest extends TestCase
 {
     use RefreshDatabase;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->withoutVite();
+    }
+
+    /**
+     * @skip
+     */
+    public function skip_test_can_get_notes()
+    {
+        // Create some test notes
+        Note::create(['content' => 'Test Note 1']);
+        Note::create(['content' => 'Test Note 2']);
+
+        // Make a GET request to the notes endpoint
+        $response = $this->get('/notes');
+
+        // Basic assertions first
+        $response->assertOk();
+        $response->assertViewIs('app');
+    }
 
     public function test_can_get_notes()
     {
@@ -22,13 +49,15 @@ class NoteTest extends TestCase
         // Assert the response is successful
         $response->assertStatus(200);
 
-        // Assert the response contains the notes
-        $response->assertInertia(fn ($assert) => $assert
-            ->component('NotesPage')
-            ->has('notes', 2)
-            ->where('notes.0.content', 'Test Note 1')
-            ->where('notes.1.content', 'Test Note 2')
-        );
+        // Assert the response contains the correct data
+        $response->assertInertia(function (Assert $page) {
+            return $page
+                ->component('NotesPage')
+                ->has('notes', 2)
+                ->where('notes.0.content', 'Test Note 1')
+                ->where('notes.1.content', 'Test Note 2')
+                ->where('error', null);
+        });
     }
 
     public function test_can_create_note()

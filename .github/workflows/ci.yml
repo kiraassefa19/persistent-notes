@@ -1,0 +1,102 @@
+name: CI
+
+on:
+  push:
+    branches: [development]
+  pull_request:
+    branches: [development]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.2"
+          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite
+          coverage: xdebug
+
+      - name: Install Dependencies
+        run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+
+      - name: Install PHP CS Fixer
+        run: composer require --dev friendsofphp/php-cs-fixer
+
+      - name: Install Security Checker
+        run: |
+          wget https://github.com/fabpot/local-php-security-checker/releases/download/v2.0.6/local-php-security-checker_2.0.6_linux_amd64
+          chmod +x local-php-security-checker_2.0.6_linux_amd64
+          sudo mv local-php-security-checker_2.0.6_linux_amd64 /usr/local/bin/local-php-security-checker
+
+      - name: Create Database
+        run: |
+          mkdir -p database
+          touch database/testing.sqlite
+
+      - name: Create .env file
+        run: |
+          echo "APP_NAME=Laravel" > .env
+          echo "APP_ENV=testing" >> .env
+          echo "APP_DEBUG=true" >> .env
+          echo "APP_URL=http://localhost" >> .env
+          echo "LOG_CHANNEL=stack" >> .env
+          echo "LOG_DEPRECATIONS_CHANNEL=null" >> .env
+          echo "LOG_LEVEL=debug" >> .env
+          echo "DB_CONNECTION=sqlite" >> .env
+          echo "DB_DATABASE=database/testing.sqlite" >> .env
+          echo "BROADCAST_DRIVER=log" >> .env
+          echo "CACHE_DRIVER=array" >> .env
+          echo "FILESYSTEM_DISK=local" >> .env
+          echo "QUEUE_CONNECTION=sync" >> .env
+          echo "SESSION_DRIVER=array" >> .env
+          echo "SESSION_LIFETIME=120" >> .env
+          echo "APP_KEY=base64:xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx=" >> .env
+
+      - name: Generate Application Key
+        run: |
+          php artisan key:generate --force
+          APP_KEY=$(grep APP_KEY .env | cut -d '=' -f2)
+          echo "APP_KEY=$APP_KEY" >> $GITHUB_ENV
+
+      - name: Run PHP CS Fixer
+        run: vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.php --dry-run --diff
+
+      - name: Run Security Check
+        run: local-php-security-checker
+
+      - name: Execute tests (via PHPUnit)
+        env:
+          APP_NAME: Laravel
+          APP_ENV: testing
+          APP_DEBUG: true
+          APP_URL: http://localhost
+          LOG_CHANNEL: stack
+          LOG_DEPRECATIONS_CHANNEL: null
+          LOG_LEVEL: debug
+          DB_CONNECTION: sqlite
+          DB_DATABASE: database/testing.sqlite
+          BROADCAST_DRIVER: log
+          CACHE_DRIVER: array
+          FILESYSTEM_DISK: local
+          QUEUE_CONNECTION: sync
+          SESSION_DRIVER: array
+          SESSION_LIFETIME: 120
+        run: vendor/bin/phpunit --coverage-clover=coverage.xml
+
+      - name: Upload coverage to Codecov
+        if: success() && github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+        continue-on-error: true
+        uses: codecov/codecov-action@v3
+        with:
+          file: ./coverage.xml
+          fail_ci_if_error: false
+          token: ${{ secrets.CODECOV_TOKEN }}
+          flags: unittests
+          name: codecov-umbrella
+          verbose: true
+          max_attempts: 3
+          retry_wait: 1000
