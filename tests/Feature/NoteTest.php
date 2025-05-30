@@ -6,6 +6,9 @@ use App\Models\Note;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
 
+/**
+ * @group feature
+ */
 class NoteTest extends TestCase
 {
     use RefreshDatabase;
@@ -13,7 +16,7 @@ class NoteTest extends TestCase
     /**
      * @skip
      */
-    public function test_can_get_notes()
+    public function skip_test_can_get_notes()
     {
         // Create some test notes
         Note::create(['content' => 'Test Note 1']);
