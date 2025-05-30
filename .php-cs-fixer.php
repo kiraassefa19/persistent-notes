@@ -39,8 +39,8 @@ return $config->setRules([
         ],
         'single_trait_insert_per_statement' => true,
         'braces' => [
-            'allow_single_line_anonymous_functions' => true,
-            'allow_single_line_empty_anonymous_classes' => true,
+            'allow_single_line_anonymous_class_with_empty_body' => true,
+            'allow_single_line_closure' => true,
             'position_after_anonymous_constructs' => 'same',
             'position_after_control_structures' => 'same',
             'position_after_functions_and_oop_constructs' => 'same',
