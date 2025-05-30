@@ -38,5 +38,22 @@ return $config->setRules([
             'keep_multiple_spaces_after_comma' => true,
         ],
         'single_trait_insert_per_statement' => true,
+        'braces' => [
+            'allow_single_line_anonymous_functions' => true,
+            'allow_single_line_empty_anonymous_classes' => true,
+            'position_after_anonymous_constructs' => 'same',
+            'position_after_control_structures' => 'same',
+            'position_after_functions_and_oop_constructs' => 'same',
+        ],
+        'new_with_braces' => true,
+        'no_trailing_comma_in_singleline' => true,
+        'no_whitespace_in_blank_line' => true,
+        'no_spaces_around_offset' => true,
+        'no_spaces_inside_parentheses' => true,
+        'no_trailing_comma_in_singleline_array' => true,
+        'no_whitespace_before_comma_in_array' => true,
+        'normalize_index_brace' => true,
+        'trim_array_spaces' => true,
+        'whitespace_after_comma_in_array' => true,
     ])
     ->setFinder($finder); 
