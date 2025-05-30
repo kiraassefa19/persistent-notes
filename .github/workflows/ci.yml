@@ -53,6 +53,9 @@ jobs:
           APP_KEY=$(grep APP_KEY .env | cut -d '=' -f2)
           echo "APP_KEY=$APP_KEY" >> $GITHUB_ENV
 
+      - name: Run PHP CS Fixer
+        run: vendor/bin/php-cs-fixer fix --config=.php-cs-fixer.php --dry-run --diff
+
       - name: Execute tests (via PHPUnit)
         env:
           APP_NAME: Laravel
