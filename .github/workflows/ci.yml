@@ -28,11 +28,13 @@ jobs:
           mkdir -p database
           touch database/testing.sqlite
 
+      - name: Generate Application Key
+        run: php artisan key:generate --force
+
       - name: Execute tests (via PHPUnit)
         env:
           APP_NAME: Laravel
           APP_ENV: testing
-          APP_KEY: base64:your-app-key-here
           APP_DEBUG: true
           APP_URL: http://localhost
           LOG_CHANNEL: stack
