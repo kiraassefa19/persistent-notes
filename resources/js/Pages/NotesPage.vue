@@ -31,9 +31,11 @@
                             v-model="form.content"
                             rows="4"
                             class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                            :class="{ 'border-red-300': form.errors.content }"
                             placeholder="What's on your mind?"
                             :disabled="form.processing"
                         ></textarea>
+                        <p v-if="form.errors.content" class="mt-2 text-sm text-red-600">{{ form.errors.content }}</p>
                     </div>
                     <div class="flex justify-end">
                         <button

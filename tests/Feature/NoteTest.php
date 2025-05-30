@@ -54,8 +54,8 @@ class NoteTest extends TestCase
             'content' => ''
         ]);
 
-        // Assert the response has validation errors
-        $response->assertSessionHasErrors('content');
+        // Assert the response has validation errors with our custom message
+        $response->assertSessionHasErrors('content', 'Please write something in your note.');
 
         // Assert no note was created in the database
         $this->assertDatabaseCount('notes', 0);
