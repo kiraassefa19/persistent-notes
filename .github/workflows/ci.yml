@@ -1,0 +1,55 @@
+name: CI
+
+on:
+  push:
+    branches: [development]
+  pull_request:
+    branches: [development]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.2"
+          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite
+          coverage: xdebug
+
+      - name: Install Dependencies
+        run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+
+      - name: Create Database
+        run: |
+          mkdir -p database
+          touch database/testing.sqlite
+
+      - name: Execute tests (via PHPUnit)
+        env:
+          APP_NAME: Laravel
+          APP_ENV: testing
+          APP_KEY: base64:your-app-key-here
+          APP_DEBUG: true
+          APP_URL: http://localhost
+          LOG_CHANNEL: stack
+          LOG_DEPRECATIONS_CHANNEL: null
+          LOG_LEVEL: debug
+          DB_CONNECTION: sqlite
+          DB_DATABASE: database/testing.sqlite
+          BROADCAST_DRIVER: log
+          CACHE_DRIVER: array
+          FILESYSTEM_DISK: local
+          QUEUE_CONNECTION: sync
+          SESSION_DRIVER: array
+          SESSION_LIFETIME: 120
+        run: vendor/bin/phpunit --coverage-clover=coverage.xml
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          file: ./coverage.xml
+          fail_ci_if_error: false

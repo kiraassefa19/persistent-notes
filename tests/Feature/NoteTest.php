@@ -14,6 +14,12 @@ class NoteTest extends TestCase
 {
     use RefreshDatabase;
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->withoutVite();
+    }
+
     /**
      * @skip
      */
@@ -40,14 +46,18 @@ class NoteTest extends TestCase
         // Make a GET request to the notes endpoint
         $response = $this->get('/notes');
 
-        // Assert the response is successful and contains the correct data
-        $response->assertInertia(fn (Assert $page) => $page
-            ->component('NotesPage')
-            ->has('notes', 2)
-            ->where('notes.0.content', 'Test Note 1')
-            ->where('notes.1.content', 'Test Note 2')
-            ->where('error', null)
-        );
+        // Assert the response is successful
+        $response->assertStatus(200);
+
+        // Assert the response contains the correct data
+        $response->assertInertia(function (Assert $page) {
+            return $page
+                ->component('NotesPage')
+                ->has('notes', 2)
+                ->where('notes.0.content', 'Test Note 1')
+                ->where('notes.1.content', 'Test Note 2')
+                ->where('error', null);
+        });
     }
 
     public function test_can_create_note()
