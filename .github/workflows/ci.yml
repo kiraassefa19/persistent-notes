@@ -88,7 +88,8 @@ jobs:
         run: vendor/bin/phpunit --coverage-clover=coverage.xml
 
       - name: Upload coverage to Codecov
-        if: success() && github.event_name == 'pull_request'
+        if: success() && github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+        continue-on-error: true
         uses: codecov/codecov-action@v3
         with:
           file: ./coverage.xml
@@ -97,3 +98,5 @@ jobs:
           flags: unittests
           name: codecov-umbrella
           verbose: true
+          max_attempts: 3
+          retry_wait: 1000
