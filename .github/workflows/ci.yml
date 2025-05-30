@@ -45,9 +45,13 @@ jobs:
           echo "QUEUE_CONNECTION=sync" >> .env
           echo "SESSION_DRIVER=array" >> .env
           echo "SESSION_LIFETIME=120" >> .env
+          echo "APP_KEY=base64:xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx=" >> .env
 
       - name: Generate Application Key
-        run: php artisan key:generate --force
+        run: |
+          php artisan key:generate --force
+          APP_KEY=$(grep APP_KEY .env | cut -d '=' -f2)
+          echo "APP_KEY=$APP_KEY" >> $GITHUB_ENV
 
       - name: Execute tests (via PHPUnit)
         env:
