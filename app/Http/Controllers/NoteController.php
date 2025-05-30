@@ -43,14 +43,14 @@ class NoteController extends Controller
             DB::connection()->getPdo();
             
             Note::create(['content' => $request->content]);
-            return redirect()->back();
+            return redirect('/notes');
         } catch (\Exception $e) {
             Log::error('Database error in NoteController@store: ' . $e->getMessage());
             Log::error('Stack trace: ' . $e->getTraceAsString());
             Log::error('Database connection: ' . config('database.default'));
             Log::error('Database path: ' . config('database.connections.sqlite.database'));
             
-            return redirect()->back()->with('error', 'Unable to save note. Please try again later.');
+            return redirect('/notes')->with('error', 'Unable to save note. Please try again later.');
         }
     }
 }
