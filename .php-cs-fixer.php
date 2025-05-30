@@ -1,13 +1,11 @@
 <?php
 
 $finder = PhpCsFixer\Finder::create()
-    ->in([
-        __DIR__ . '/app',
-        __DIR__ . '/config',
-        __DIR__ . '/database',
-        __DIR__ . '/resources',
-        __DIR__ . '/routes',
-        __DIR__ . '/tests',
+    ->in(__DIR__)
+    ->exclude([
+        'bootstrap/cache',
+        'storage',
+        'vendor',
     ])
     ->name('*.php')
     ->notName('*.blade.php')
