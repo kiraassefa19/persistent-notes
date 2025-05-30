@@ -52,16 +52,17 @@ jobs:
           file: ./coverage.xml
           fail_ci_if_error: true
 
-      - name: Upload coverage report as artifact
-        uses: actions/upload-artifact@v3
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
         with:
           name: coverage-report
           path: coverage-report
+          retention-days: 7
 
   build-and-deploy:
     needs: laravel-tests
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/development ]'
+    if: github.ref == 'refs/heads/development'
 
     steps:
       - uses: actions/checkout@v3
