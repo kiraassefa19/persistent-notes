@@ -5,17 +5,10 @@ namespace Tests\Feature;
 use App\Models\Note;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
-use Illuminate\Support\Facades\Artisan;
 
 class NoteTest extends TestCase
 {
     use RefreshDatabase;
-
-    protected function setUp(): void
-    {
-        parent::setUp();
-        Artisan::call('migrate:fresh');
-    }
 
     public function test_can_get_notes()
     {
